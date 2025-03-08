@@ -18,8 +18,8 @@ namespace ProductService.Infrastructure.Repository
         {
             return await _context.Products
                 .Where(p => (string.IsNullOrEmpty(name) || p.Name.Contains(name)) &&
-                            (string.IsNullOrEmpty(type) || p.Type == type) &&
-                            (string.IsNullOrEmpty(franchise) || p.Franchise == franchise))
+                            (string.IsNullOrEmpty(type) || p.Type == type)
+                            )
                 .ToListAsync();
         }
     }

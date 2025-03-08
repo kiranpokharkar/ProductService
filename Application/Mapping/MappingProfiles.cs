@@ -9,13 +9,22 @@ namespace ProductService.Application.Mapping
     {
         public MappingProfile()
         {
-            CreateMap<Category, CategoryDto>();
+            // Map Product entity to ProductDto and vice versa
+            CreateMap<Product, ProductDto>()
+                .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))
+                .ForMember(dest => dest.Franchise, opt => opt.MapFrom(src => src.Franchise));
 
             CreateMap<ProductDto, Product>()
-                        .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId)); // Directly map CategoryId
+                .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))
+                .ForMember(dest => dest.Franchise, opt => opt.MapFrom(src => src.Franchise));
 
-            // Map Product to ProductDto (CategoryId will be in the DTO, not the full Category object)
-            CreateMap<Product, ProductDto>();
+            // Map Category entity to CategoryDto and vice versa
+            CreateMap<Category, CategoryDto>();
+            CreateMap<CategoryDto, Category>();
+
+            // Map Franchise entity to FranchiseDto and vice versa
+            CreateMap<Franchise, FranchiseDto>();
+            CreateMap<FranchiseDto, Franchise>();
         }
     }
 }

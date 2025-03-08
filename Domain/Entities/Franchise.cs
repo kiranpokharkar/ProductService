@@ -2,13 +2,13 @@
 
 namespace ProductService.Domain.Entities
 {
-    public class Category
+    public class Franchise
     {
         [Key]
         public int Id { get; set; }  // Primary Key, Auto-Incremented by DB
 
-        [Required(ErrorMessage = "Category name is required.")]
-        [StringLength(100, ErrorMessage = "Category name can't be longer than 100 characters.")]
+        [Required(ErrorMessage = "Franchise name is required.")]
+        [StringLength(100, ErrorMessage = "Franchise name can't be longer than 100 characters.")]
         public string Name { get; set; } = string.Empty;
 
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters.")]
