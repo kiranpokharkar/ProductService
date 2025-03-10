@@ -26,5 +26,19 @@ namespace ProductService.Infrastructure.Repository
                 .Where(f => (string.IsNullOrEmpty(name) || f.Name.Contains(name)))
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Franchise>> GetAllAsync()
+        {
+            return await _context.Franchises
+                .Include(c => c.Products)
+                .ToListAsync();
+        }
+
+        public async Task<Franchise> GetByIdAsync(int id)
+        {
+            return await _context.Franchises
+                .Include(c => c.Products)
+                .FirstOrDefaultAsync(c => c.Id == id);
+        }
     }
 }

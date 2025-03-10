@@ -1,48 +1,72 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProductService.Application.DTOs;
 using ProductService.Application.Interfaces;
+using ProductService.Application.Interfaces.ServicesInterface;
 using ProductService.Domain.Entities;
 
 namespace ProductService.Controllers
 {
-    [Route("api/categories")]
     [ApiController]
+    [Route("api/[controller]")]
     public class CategoryController : ControllerBase
     {
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly ICategoryService _categoryService;
+        private readonly ILogger<FranchiseController> _logger;
 
-        public CategoryController(ICategoryRepository categoryRepository)
+        public CategoryController(ICategoryService categoryService, ILogger<FranchiseController> logger)
         {
-            _categoryRepository = categoryRepository;
+            _categoryService = categoryService;
+            _logger = logger;
         }
 
-        // ✅ Get All Categories
+
+
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAllCategories()
         {
-            var categories = await _categoryRepository.GetAllAsync();
+
+            try
+            {
+                var categories = await _categoryService.GetAllCategoriesAsync();
+
+                if (categories == null || !categories.Any())
+                {
+                    return NoContent();
+                }
+
+                return Ok(categories);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching all franchises.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error.");
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetCategoryById(int id)
+        {
+            var categories = await _categoryService.GetCategoryByIdAsync(id);
+
+            if (categories == null)
+            {
+                return NotFound();
+            }
             return Ok(categories);
         }
 
-        // ✅ Create Category
         [HttpPost]
-        public async Task<IActionResult> Create(CategoryDto categoryDto)
+        public async Task<IActionResult> CreateCategory(CategoryDto categoryDTO)
         {
-            var category = new Category
-            {
-                Name = categoryDto.Name
-            };
-
-            await _categoryRepository.AddAsync(category);
-            return CreatedAtAction(nameof(GetAll), new { id = category.Id }, categoryDto);
+            await _categoryService.CreateCategoryAsync(categoryDTO);
+            return CreatedAtAction(nameof(GetCategoryById), new { id = categoryDTO.Id }, categoryDTO);
         }
-        // ✅ Get Category by Name
-        [HttpGet("{name}")]
-        public async Task<IActionResult> GetByName(string name)
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteCategory(int id)
         {
-            var category = await _categoryRepository.GetByNameAsync(name);
-            if (category == null) return NotFound();
-            return Ok(category);
+            await _categoryService.DeleteCategoryAsync(id);
+            return NoContent();
         }
     }
 }

@@ -29,7 +29,6 @@ namespace ProductService.Application.DTOs
 
         [Required(ErrorMessage = "Product type is required.")]
         [StringLength(50, ErrorMessage = "Product type can't be longer than 50 characters.")]
-        public string Type { get; set; } = string.Empty;
 
         // Foreign Keys (make optional)
         public int? CategoryId { get; set; } // Now optional

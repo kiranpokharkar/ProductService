@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ProductService.Application.DTOs;
 using ProductService.Application.Interfaces;
+using ProductService.Application.Interfaces.ServicesInterface;
 using ProductService.Domain.Entities;
 
 namespace ProductService.Controllers
@@ -10,13 +11,11 @@ namespace ProductService.Controllers
     [Route("api/[controller]")]
     public class ProductController : ControllerBase
     {
-        private readonly IProductRepository _productRepository;
-        private readonly IMapper _mapper;
+        private readonly IProductService _productService;
 
-        public ProductController(IProductRepository productRepository, IMapper mapper)
+        public ProductController(IProductService productService)
         {
-            _productRepository = productRepository;
-            _mapper = mapper;
+            _productService = productService;
         }
 
         // ✅ Create Product
@@ -28,29 +27,39 @@ namespace ProductService.Controllers
                 return BadRequest("Product data is required.");
             }
 
-            // Map the DTO to the Product entity
-            var product = _mapper.Map<Product>(productDto);
-
-            // Add product to database
-            await _productRepository.AddAsync(product);
-
-            // Return the newly created product with a 201 Created status
-            return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
+            var createdProduct = await _productService.CreateProductAsync(productDto);
+            return CreatedAtAction(nameof(GetById), new { id = createdProduct.Id }, createdProduct);
         }
 
-        // ✅ Get Product by Id (for CreatedAtAction to work)
+        // ✅ Get Product by Id
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var product = await _productRepository.GetByIdAsync(id);
-
-            if (product == null)
+            try
             {
-                return NotFound();
+                var product = await _productService.GetProductByIdAsync(id);
+                return Ok(product);
             }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
 
-            var productDto = _mapper.Map<ProductDto>(product);
-            return Ok(productDto);
+        // ✅ Get All Products
+        [HttpGet]
+        public async Task<IActionResult> GetAll([FromQuery] string? name, [FromQuery] string? franchise, [FromQuery] string? category)
+        {
+            var products = await _productService.GetAllProductsAsync(name, franchise, category);
+            return Ok(products);
+        }
+
+        [HttpDelete("{publicId}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _productService.DeleteProductAsync(id);
+
+            return NoContent(); // 204 No Content (successful deletion)
         }
     }
 }

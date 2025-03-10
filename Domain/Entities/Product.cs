@@ -30,10 +30,6 @@ namespace ProductService.Domain.Entities
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        [Required(ErrorMessage = "Product type is required.")]
-        [StringLength(50, ErrorMessage = "Product type can't be longer than 50 characters.")]
-        public string Type { get; set; } = string.Empty;
-
         // Foreign Keys with [ForeignKey] annotations
         [ForeignKey("Category")]
         [Required(ErrorMessage = "Category ID is required.")]

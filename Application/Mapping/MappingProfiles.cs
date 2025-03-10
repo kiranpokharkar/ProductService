@@ -25,6 +25,20 @@ namespace ProductService.Application.Mapping
             // Map Franchise entity to FranchiseDto and vice versa
             CreateMap<Franchise, FranchiseDto>();
             CreateMap<FranchiseDto, Franchise>();
+
+
+            CreateMap<Cart, CartDto>()
+                       .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
+
+            CreateMap<CartDto, Cart>()
+                .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
+
+            CreateMap<CartItem, CartItemDto>()
+                .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.ProductId.ToString()));
+
+            CreateMap<CartItemDto, CartItem>()
+                .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => int.Parse(src.ProductId)));
+
         }
     }
 }

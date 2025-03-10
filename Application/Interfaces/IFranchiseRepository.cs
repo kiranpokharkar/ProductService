@@ -11,5 +11,9 @@ namespace ProductService.Application.Interfaces
         /// <param name="description">The description to search for within the franchise.</param>
         /// <returns>A collection of matching franchise entities.</returns>
         Task<IEnumerable<Franchise>> SearchAsync(string? name);
+
+        Task<Franchise> GetByIdAsync(int id);
+
+        Task<IEnumerable<Franchise>> GetAllAsync();
     }
 }

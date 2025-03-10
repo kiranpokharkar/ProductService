@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProductService.Application.DTOs;
 using ProductService.Application.Interfaces;
+using ProductService.Application.Interfaces.ServicesInterface;
 using ProductService.Domain.Entities;
 
 namespace ProductService.Controllers
@@ -9,12 +10,12 @@ namespace ProductService.Controllers
     [ApiController]
     public class FranchiseController : ControllerBase
     {
-        private readonly IFranchiseRepository _franchiseRepository;
+        private readonly IFranchiseService _franchiseService;
         private readonly ILogger<FranchiseController> _logger;
 
-        public FranchiseController(IFranchiseRepository franchiseRepository, ILogger<FranchiseController> logger)
+        public FranchiseController(IFranchiseService franchiseService, ILogger<FranchiseController> logger)
         {
-            _franchiseRepository = franchiseRepository;
+            _franchiseService = franchiseService;
             _logger = logger;
         }
 
@@ -26,14 +27,8 @@ namespace ProductService.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateFranchiseAsync([FromBody] FranchiseDto franchiseDto)
         {
-            var franchise = new Franchise
-            {
-                Name = franchiseDto.Name,
-                Description = franchiseDto.Description,
-                CreatedAt = DateTime.UtcNow
-            };
 
-            await _franchiseRepository.AddAsync(franchise);
+            await _franchiseService.CreateFranchisAsync(franchiseDto);
 
             // Ensure the route for GetFranchiseByIdAsync is correct
             return Created();
@@ -45,7 +40,7 @@ namespace ProductService.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetFranchiseByIdAsync(int id)
         {
-            var franchise = await _franchiseRepository.GetByIdAsync(id);
+            var franchise = await _franchiseService.GeFranchisByIdAsync(id);
             if (franchise == null)
             {
                 return NotFound();
@@ -64,7 +59,7 @@ namespace ProductService.Controllers
         {
             try
             {
-                var franchises = await _franchiseRepository.GetAllAsync();
+                var franchises = await _franchiseService.GetAllFranchisAsync();
 
                 if (franchises == null || !franchises.Any())
                 {
@@ -80,34 +75,34 @@ namespace ProductService.Controllers
             }
         }
 
-        /// <summary>
-        /// Searches franchises based on the provided filters.
-        /// </summary>
-        /// <param name="name">Name of the franchise to search for.</param>
-        /// <param name="description">Description of the franchise to search for.</param>
-        /// <returns>A list of matching franchises.</returns>
-        [HttpGet("search")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> SearchFranchisesAsync(string? name)
-        {
-            try
-            {
-                var franchises = await _franchiseRepository.SearchAsync(name);
+        ///// <summary>
+        ///// Searches franchises based on the provided filters.
+        ///// </summary>
+        ///// <param name="name">Name of the franchise to search for.</param>
+        ///// <param name="description">Description of the franchise to search for.</param>
+        ///// <returns>A list of matching franchises.</returns>
+        //[HttpGet("search")]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
+        //public async Task<IActionResult> SearchFranchisesAsync(string? name)
+        //{
+        //    try
+        //    {
+        //        var franchises = await _franchiseRepository.SearchAsync(name);
 
-                if (franchises == null || !franchises.Any())
-                {
-                    return NotFound("No matching franchises found.");
-                }
+        //        if (franchises == null || !franchises.Any())
+        //        {
+        //            return NotFound("No matching franchises found.");
+        //        }
 
-                return Ok(franchises);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error searching for franchises.");
-                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error.");
-            }
-        }
+        //        return Ok(franchises);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "Error searching for franchises.");
+        //        return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error.");
+        //    }
+        //}
 
         /// <summary>
         /// Deletes a franchise by its ID.
@@ -121,14 +116,8 @@ namespace ProductService.Controllers
         {
             try
             {
-                var franchise = await _franchiseRepository.GetByIdAsync(id);
 
-                if (franchise == null)
-                {
-                    return NotFound($"Franchise with ID {id} not found.");
-                }
-
-                await _franchiseRepository.DeleteAsync(franchise);
+                await _franchiseService.DeleteFranchiseAsync(id);
 
                 return NoContent();
             }
