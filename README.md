@@ -1,7 +1,7 @@
 # IPL eCommerce Web API
 
 ## Overview
-This project is a **.NET 8.0 Web API** developed for an **IPL eCommerce platform** that sells merchandise for various IPL franchises. The API follows a **microservices architecture** and is built using **clean architecture principles** with best practices in mind.
+This project is a **.NET 8.0 Web API** developed for an **IPL eCommerce platform** that sells merchandise for various IPL franchises. The API is built using **clean architecture principles** with best practices in mind.
 
 ## 📌 Features
 - **Category Service**: Manages product categories.
