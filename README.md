@@ -11,8 +11,8 @@ This project is a **.NET 8.0 Web API** developed for an **IPL eCommerce platform
 - **Order Service**: Uses **MongoDB** to store order details.
 - **Image Upload**: Utilizes **Azure Blob Storage** to store product images.
 - **Database**:
-  - **SQL Server** is used for `Category`, `Product`, and `Franchise` services.
-  - **MongoDB** is used for `Cart` and `Order` services.
+  - **Azure SQL Server** is used for `Category`, `Product`, and `Franchise` services.
+  - **Azure Cosmos MongoDB** is used for `Cart` and `Order` services.
   - **Azure Blob Storage** is to store image in blob container
 
 ## 📂 API Endpoints
